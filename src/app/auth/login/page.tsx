@@ -15,7 +15,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [mode, setMode] = useState<'user' | 'admin'>('user');
   const [pageLoading, setPageLoading] = useState(true);
-  const [showDemoCredentials, setShowDemoCredentials] = useState(false);
 
   // Load saved email and redirect if already logged in
   useEffect(() => {
@@ -161,31 +160,6 @@ export default function LoginPage() {
                 : 'Sign in to analyze job postings and protect yourself from scams'}
             </p>
           </div>
-
-          {/* Admin Help */}
-          {mode === 'admin' && (
-            <div className="mb-8 p-4 border-2 border-purple-700/50 bg-purple-900/20">
-              <button
-                type="button"
-                onClick={() => setShowDemoCredentials(!showDemoCredentials)}
-                className="w-full text-left text-xs text-purple-400 uppercase tracking-widest font-bold hover:text-purple-300 transition-colors"
-              >
-                {showDemoCredentials ? '🔒 Hide Demo Credentials' : '🔓 Reveal Demo Credentials'}
-              </button>
-              {showDemoCredentials && (
-                <div className="mt-4 space-y-2 text-xs text-gray-300">
-                  <div>
-                    <p className="text-purple-300 font-bold">Email:</p>
-                    <p className="font-mono text-amber-400">reddyajay510@gmail.com</p>
-                  </div>
-                  <div>
-                    <p className="text-purple-300 font-bold">Password:</p>
-                    <p className="font-mono text-amber-400">Ajay#2004</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Job Seeker Registration Info */}
           {mode === 'user' && (
