@@ -238,19 +238,24 @@ export default function AnalyzePage() {
           : 'No major red flags detected. Job posting appears legitimate.'
       );
 
-      // Save analysis to history
-      saveAnalysis(
-        user?.id || 'unknown',
-        user?.name || 'Unknown User',
-        jobPosting,
-        companyName || 'Not specified',
-        location || 'Not specified',
-        salaryRange || 'Not specified',
-        finalScore,
-        detectedFlags > 0
-          ? `Detected ${detectedFlags} potential red flags in this job posting.`
-          : 'No major red flags detected. Job posting appears legitimate.'
-      );
+      // Save analysis to history with error handling
+      try {
+        const savedAnalysis = saveAnalysis(
+          user?.id || 'unknown',
+          user?.name || 'Unknown User',
+          jobPosting,
+          companyName || 'Not specified',
+          location || 'Not specified',
+          salaryRange || 'Not specified',
+          finalScore,
+          detectedFlags > 0
+            ? `Detected ${detectedFlags} potential red flags in this job posting.`
+            : 'No major red flags detected. Job posting appears legitimate.'
+        );
+        console.log('✅ Analysis saved:', savedAnalysis);
+      } catch (error) {
+        console.error('❌ Error saving analysis:', error);
+      }
 
       setLoading(false);
     }, 2000);

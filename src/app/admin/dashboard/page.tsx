@@ -27,7 +27,11 @@ if (!loading && (!user || user.role !== 'admin')) {
     router.push('/auth/login');
   } else if (user && user.role === 'admin') {
     // Load all analyses
-    setAnalyses(getAllAnalyses().sort((a, b) => b.timestamp - a.timestamp));
+    const allAnalyses = getAllAnalyses().sort((a, b) => b.timestamp - a.timestamp);
+    console.log('👨‍💼 Admin panel loaded');
+    console.log('📊 Total analyses:', allAnalyses.length);
+    console.log('📋 All analyses:', allAnalyses);
+    setAnalyses(allAnalyses);
 
     // Load all users
     setUsers(getLocalUsers());
@@ -50,57 +54,29 @@ if (loading) {
 
   return (
     <div className="min-h-screen bg-black text-white pb-12">
-      {/* Header */}
-      <div className="border-b-2 border-amber-700 bg-black">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex justify-between items-start mb-8">
-            <div>
-              <h1 className="text-6xl font-black uppercase tracking-wider mb-2">
-                <span className="bg-gradient-to-r from-amber-500 via-red-600 to-amber-600 bg-clip-text text-transparent">
-                  Admin Control
-                </span>
-              </h1>
-              <p className="text-amber-400 text-sm uppercase tracking-widest font-bold">System Management Panel</p>
-            </div>
-            <div className="text-right flex flex-col gap-4 items-end">
-              <div>
-                <p className="text-xs text-amber-400 uppercase tracking-widest font-bold mb-1">Admin User</p>
-                <p className="text-2xl font-black uppercase">AJAYREDDY</p>
-                <p className="text-gray-400 text-sm mt-2">{user.email?.toLowerCase()}</p>
-              </div>
-              <button
-                onClick={() => setActiveTab('report-scam')}
-                className="px-6 py-2 bg-red-600 hover:bg-red-500 text-white font-black text-sm uppercase tracking-wider border-2 border-red-600 transition-all"
-              >
-                🚨 Report a Scam
-              </button>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-4 border-t-2 border-gray-800 pt-6">
-            {['overview', 'reports', 'users', 'analytics'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 py-3 font-black text-xs uppercase tracking-widest border-b-2 transition-all ${
-                  activeTab === tab
-                    ? 'border-amber-600 text-amber-500'
-                    : 'border-transparent text-gray-400 hover:text-amber-400'
-                }`}
-              >
-                {tab === 'overview' && 'Overview'}
-                {tab === 'reports' && 'Reports'}
-                {tab === 'users' && 'Users'}
-                {tab === 'analytics' && 'Analytics'}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
+        {/* Tabs */}
+        <div className="flex gap-4 border-b-2 border-gray-800 pb-6 mb-8">
+          {['overview', 'reports', 'users', 'analytics', 'report-scam'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-6 py-3 font-black text-xs uppercase tracking-widest border-b-2 transition-all -mb-6 pb-6 ${
+                activeTab === tab
+                  ? 'border-amber-600 text-amber-500'
+                  : 'border-transparent text-gray-400 hover:text-amber-400'
+              }`}
+            >
+              {tab === 'overview' && 'Overview'}
+              {tab === 'reports' && 'Reports'}
+              {tab === 'users' && 'Users'}
+              {tab === 'analytics' && 'Analytics'}
+              {tab === 'report-scam' && '🚨 Report a Scam'}
+            </button>
+          ))}
+        </div>
+
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className="space-y-8">

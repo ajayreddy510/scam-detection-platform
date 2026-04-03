@@ -21,6 +21,9 @@ export default function Dashboard() {
       router.push('/auth/login');
     } else if (user) {
       const userAnalyses = getUserAnalyses(user.id);
+      console.log('🔎 Dashboard loaded for user:', user.id);
+      console.log('📊 User analyses count:', userAnalyses.length);
+      console.log('📋 User analyses:', userAnalyses);
       setAnalyses(userAnalyses);
       applyFiltersAndSort(userAnalyses, 'all', 'high-to-low', '');
       setPageLoading(false);

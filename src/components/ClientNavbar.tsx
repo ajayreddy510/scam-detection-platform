@@ -49,7 +49,7 @@ export default function ClientNavbar() {
               </Link>
               {user.role !== 'admin' && (
                 <Link href="/report" className="hover:text-amber-500 transition font-bold text-sm uppercase tracking-wider">
-                  🚨 Reports
+                  📋 My Reports
                 </Link>
               )}
             </>

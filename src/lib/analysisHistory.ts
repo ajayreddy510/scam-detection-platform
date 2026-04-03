@@ -78,3 +78,30 @@ export function getAnalysisStats(analyses: Analysis[]) {
     lastAnalysis: analyses.length > 0 ? analyses[0].date : 'Never',
   };
 }
+
+// Debug and verification functions
+export function debugAnalysisData() {
+  if (typeof window === 'undefined') return null;
+  const data = localStorage.getItem(ANALYSES_KEY);
+  console.log('📊 Analysis Data in localStorage:', {
+    key: ANALYSES_KEY,
+    exists: !!data,
+    size: data?.length,
+    data: data ? JSON.parse(data) : [],
+  });
+  return data ? JSON.parse(data) : [];
+}
+
+export function verifyAnalysisData() {
+  const allAnalyses = getAllAnalyses();
+  console.log('✅ Total analyses:', allAnalyses.length);
+  console.log('📋 Analysis breakdown by user:');
+  const byUser = allAnalyses.reduce<Record<string, number>>((acc, a) => {
+    acc[a.userId] = (acc[a.userId] || 0) + 1;
+    return acc;
+  }, {});
+  Object.entries(byUser).forEach(([userId, count]) => {
+    console.log(`  - ${userId}: ${count} analysis(es)`);
+  });
+  return allAnalyses;
+}
