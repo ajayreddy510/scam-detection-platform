@@ -54,7 +54,7 @@ const WARNING_KEYWORDS = {
     'immediate',
     'limited time',
     'act now',
-    'don\'t miss',
+    'dont miss',
     'exclusive opportunity',
     'limited positions',
     'hurry',
