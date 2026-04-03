@@ -30,8 +30,18 @@ const SCAM_KEYWORDS = {
     'no experience needed',
     'no qualifications',
   ],
-  medium: [ with ML integration
-  static analyzeJobPosting(request: JobAnalysisRequest): JobAnalysisResult {
+  medium: [
+    'flexible schedule',
+    'part time',
+    'remote work',
+    'work from home',
+    'home based',
+    'extra income',
+    'supplement income',
+    'side hustle',
+    'passive income',
+  ],
+};
     const redFlags: RedFlag[] = [];
     let riskScore = 0;
 
