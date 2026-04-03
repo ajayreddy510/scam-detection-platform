@@ -1,18 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, loading: authLoading } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [mode, setMode] = useState<'user' | 'admin'>('user');
+  const [pageLoading, setPageLoading] = useState(true);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading) {
+      if (user) {
+        // User is already logged in, redirect to appropriate dashboard
+        if (user.role === 'admin') {
+          router.push('/admin/dashboard');
+        } else {
+          router.push('/analyze');
+        }
+      }
+      setPageLoading(false);
+    }
+  }, [user, authLoading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,39 +39,45 @@ export default function LoginPage() {
       const result = await login(email, password, mode);
 
       if (result.success) {
-        if (mode === 'admin') {
-          setTimeout(() => router.push('/admin/dashboard'), 500);
-        } else {
-          setTimeout(() => router.push('/analyze'), 500);
-        }
+        // Wait a moment for state to update, then redirect
+        setTimeout(() => {
+          if (mode === 'admin') {
+            router.push('/admin/dashboard');
+          } else {
+            router.push('/analyze');
+          }
+        }, 300);
       } else {
         let errorMessage = result.error || 'Login failed';
         
-        // Improve Firebase error messages
-        if (errorMessage.includes('auth/configuration-not-found')) {
-          errorMessage = 'Firebase service temporarily unavailable. Please try again.';
-        } else if (errorMessage.includes('auth/user-not-found')) {
-          errorMessage = 'No account found with this email. Please register first.';
-        } else if (errorMessage.includes('auth/wrong-password')) {
-          errorMessage = 'Incorrect password. Please try again.';
-        } else if (errorMessage.includes('auth/invalid-email')) {
-          errorMessage = 'Invalid email address.';
+        // Improve error messages
+        if (errorMessage.includes('Invalid')) {
+          if (mode === 'admin') {
+            errorMessage = 'Invalid admin credentials. Use reddyajay510@gmail.com / Ajay#2004';
+          } else {
+            errorMessage = 'Invalid email or password. Please register if you don\'t have an account.';
+          }
         }
         
         setError(errorMessage);
       }
     } catch (err: any) {
-      let errorMessage = 'Login failed. Please try again.';
-      
-      if (err.code === 'auth/configuration-not-found') {
-        errorMessage = 'Firebase service temporarily unavailable.';
-      }
-      
-      setError(errorMessage);
+      setError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (pageLoading || authLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-12 w-12 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 relative overflow-hidden">
@@ -121,6 +143,23 @@ export default function LoginPage() {
                 : 'Sign in to analyze job postings and protect yourself from scams'}
             </p>
           </div>
+
+          {/* Demo Credentials Info */}
+          {mode === 'admin' && (
+            <div className="mb-8 p-4 border-2 border-purple-700/50 bg-purple-900/20">
+              <p className="text-xs text-purple-400 uppercase tracking-widest font-bold mb-3">🔓 Demo Admin Access</p>
+              <div className="space-y-2 text-xs text-gray-300">
+                <div>
+                  <p className="text-purple-300 font-bold">Email:</p>
+                  <p className="font-mono text-amber-400">reddyajay510@gmail.com</p>
+                </div>
+                <div>
+                  <p className="text-purple-300 font-bold">Password:</p>
+                  <p className="font-mono text-amber-400">Ajay#2004</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Job Seeker Registration Info */}
           {mode === 'user' && (
