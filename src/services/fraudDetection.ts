@@ -42,47 +42,10 @@ const SCAM_KEYWORDS = {
     'passive income',
   ],
 };
-    const redFlags: RedFlag[] = [];
-    let riskScore = 0;
 
-    // 1. Advanced keyword analysis with severity levels
-    const criticalKeywords = this.checkKeywordsBySeverity(
-      request.jobDescription.toLowerCase(),
-      SCAM_KEYWORDS.critical
-    );
-    const highKeywords = this.checkKeywordsBySeverity(
-      request.jobDescription.toLowerCase(),
-      SCAM_KEYWORDS.high
-    );
-    const mediumKeywords = this.checkKeywordsBySeverity(
-      request.jobDescription.toLowerCase(),
-      SCAM_KEYWORDS.medium
-    );
-
-    if (criticalKeywords.length > 0) {
-      redFlags.push({
-        type: 'CRITICAL_PAYMENT_REQUEST',
-        severity: 'high',
-        description: 'CRITICAL: Job posting requests payment/financial information',
-        evidence: `Found suspicious keywords: ${criticalKeywords.join(', ')}`,
-      });
-      riskScore += 50;
-    } else if (highKeywords.length > 0) {
-      redFlags.push({
-        type: 'PAYMENT_REQUEST',
-        severity: 'high',
-        description: 'Job posting contains suspicious payment-related keywords',
-        evidence: `Found: ${highKeywords.join(', ')}`,
-      });
-      riskScore += 35;
-    } else if (mediumKeywords.length > 0) {
-      redFlags.push({
-        type: 'SUSPICIOUS_KEYWORDS',
-        severity: 'medium',
-        description: 'Job posting contains potentially misleading language',
-        evidence: `Found: ${mediumKeywords.join(', ')}`,
-      });
-      riskScore += 1
+// Warning keywords for urgency detection
+const WARNING_KEYWORDS = {
+  critical: [
     'apply immediately',
     'first come first serve',
   ],
@@ -148,19 +111,44 @@ export class FraudDetectionService {
     const redFlags: RedFlag[] = [];
     let riskScore = 0;
 
-    // Check for scam keywords
-    const scamKeywordMatches = this.checkKeywords(
+    // 1. Advanced keyword analysis with severity levels
+    const criticalKeywords = this.checkKeywordsBySeverity(
       request.jobDescription.toLowerCase(),
-      SCAM_KEYWORDS
+      SCAM_KEYWORDS.critical
     );
-    if (scamKeywordMatches.length > 0) {
+    const highKeywords = this.checkKeywordsBySeverity(
+      request.jobDescription.toLowerCase(),
+      SCAM_KEYWORDS.high
+    );
+    const mediumKeywords = this.checkKeywordsBySeverity(
+      request.jobDescription.toLowerCase(),
+      SCAM_KEYWORDS.medium
+    );
+
+    if (criticalKeywords.length > 0) {
+      redFlags.push({
+        type: 'CRITICAL_PAYMENT_REQUEST',
+        severity: 'high',
+        description: 'CRITICAL: Job posting requests payment/financial information',
+        evidence: `Found suspicious keywords: ${criticalKeywords.join(', ')}`,
+      });
+      riskScore += 50;
+    } else if (highKeywords.length > 0) {
       redFlags.push({
         type: 'PAYMENT_REQUEST',
         severity: 'high',
         description: 'Job posting contains suspicious payment-related keywords',
-        evidence: `Found: ${scamKeywordMatches.join(', ')}`,
+        evidence: `Found: ${highKeywords.join(', ')}`,
       });
       riskScore += 35;
+    } else if (mediumKeywords.length > 0) {
+      redFlags.push({
+        type: 'SUSPICIOUS_KEYWORDS',
+        severity: 'medium',
+        description: 'Job posting contains potentially misleading language',
+        evidence: `Found: ${mediumKeywords.join(', ')}`,
+      });
+      riskScore += 10;
     }
 
     // 2. Advanced urgency analysis
@@ -228,26 +216,26 @@ export class FraudDetectionService {
         evidence: `Domain: ${emailDomain}`,
       });
       riskScore += 20;
-    }5. Advanced salary anomaly detection
+    }
+
+    // 5. Advanced salary anomaly detection
     if (request.salary) {
       const salaryFlags = this.checkAdvancedSalaryAnomaly(request.salary, request.jobTitle);
       salaryFlags.forEach((flag) => {
         redFlags.push(flag);
         riskScore += flag.severity === 'high' ? 25 : 15;
-      }); severity: 'high',
+      });
+    }
+
+    // Validate email format
+    if (!this.isValidEmail(request.recruiterEmail)) {
+      redFlags.push({
+        type: 'INVALID_EMAIL',
+        severity: 'high',
         description: 'Invalid email format detected',
         evidence: `Email: ${request.recruiterEmail}`,
       });
       riskScore += 20;
-    }
-
-    // Check for salary anomalies
-    if (request.salary) {
-      const salaryFlag = this.checkSalaryAnomaly(request.salary, request.jobTitle);
-      if (salaryFlag) {
-        redFlags.push(salaryFlag);
-        riskScore += 20;
-      }
     }
 
     // Check grammar/spelling quality
