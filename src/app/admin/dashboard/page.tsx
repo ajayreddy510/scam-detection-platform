@@ -8,7 +8,7 @@ import { getLocalUsers } from '@/lib/localAuth';
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [analyses, setAnalyses] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
