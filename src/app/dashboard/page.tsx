@@ -20,10 +20,10 @@ export default function Dashboard() {
     if (loading) return;
     
     if (!user) {
-      // User not authenticated, redirect to login after a brief delay
+      // User not authenticated, redirect to login after a delay
       const timer = setTimeout(() => {
         router.push('/auth/login');
-      }, 100);
+      }, 800);
       return () => clearTimeout(timer);
     } else {
       // User is authenticated, load their analyses

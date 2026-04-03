@@ -25,8 +25,15 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/login');
+    if (loading) return;
+    
+    if (!user) {
+      const timer = setTimeout(() => {
+        if (!user) {
+          router.push('/auth/login');
+        }
+      }, 800);
+      return () => clearTimeout(timer);
     } else if (user) {
       setFormData({
         name: user.name || '',

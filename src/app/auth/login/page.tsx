@@ -56,14 +56,14 @@ export default function LoginPage() {
       const result = await login(email, password, mode);
 
       if (result.success) {
-        // Wait a moment for state to update, then redirect
+        // Wait for state to fully update before redirecting
         setTimeout(() => {
           if (mode === 'admin') {
             router.push('/admin/dashboard');
           } else {
             router.push('/analyze');
           }
-        }, 300);
+        }, 800);
       } else {
         let errorMessage = result.error || 'Login failed';
         

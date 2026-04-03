@@ -28,7 +28,7 @@ export default function AnalyzePage() {
   const [submitted, setSubmitted] = useState(false);
 
   // Show loading while checking auth
-  if (authLoading) {
+  if (authLoading || !user) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
         <div className="text-center">
@@ -39,7 +39,7 @@ export default function AnalyzePage() {
     );
   }
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated (shouldn't reach here if trusting authLoading)
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">

@@ -9,6 +9,7 @@ import { getLocalUsers } from '@/lib/localAuth';
 export default function AdminDashboard() {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [analyses, setAnalyses] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
@@ -22,21 +23,32 @@ export default function AdminDashboard() {
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState('');
 
-useEffect(() => {
-if (!loading && (!user || user.role !== 'admin')) {
-    router.push('/auth/login');
-  } else if (user && user.role === 'admin') {
-    // Load all analyses
-    const allAnalyses = getAllAnalyses().sort((a, b) => b.timestamp - a.timestamp);
-    console.log('👨‍💼 Admin panel loaded');
-    console.log('📊 Total analyses:', allAnalyses.length);
-    console.log('📋 All analyses:', allAnalyses);
-    setAnalyses(allAnalyses);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-    // Load all users
-    setUsers(getLocalUsers());
-  }
-}, [user, loading, router]);
+  useEffect(() => {
+    if (!mounted || loading) return;
+    
+    if (!user || user.role !== 'admin') {
+      const timer = setTimeout(() => {
+        if (!user || user.role !== 'admin') {
+          router.push('/auth/login');
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    } else if (user && user.role === 'admin') {
+      // Load all analyses
+      const allAnalyses = getAllAnalyses().sort((a, b) => b.timestamp - a.timestamp);
+      console.log('👨‍💼 Admin panel loaded');
+      console.log('📊 Total analyses:', allAnalyses.length);
+      console.log('📋 All analyses:', allAnalyses);
+      setAnalyses(allAnalyses);
+
+      // Load all users
+      setUsers(getLocalUsers());
+    }
+  }, [user, loading, mounted, router]);
 if (loading) {
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
