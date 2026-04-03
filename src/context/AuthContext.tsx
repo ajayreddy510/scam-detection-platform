@@ -32,18 +32,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Check if user is already logged in on mount
   useEffect(() => {
-    try {
-      const token = localStorage.getItem('safehire_auth_token');
-      const userData = localStorage.getItem('safehire_user_data');
-      
-      if (token && userData) {
-        setUser(JSON.parse(userData));
+    const checkAuth = () => {
+      try {
+        // Ensure we're on client side
+        if (typeof window !== 'undefined') {
+          const token = localStorage.getItem('safehire_auth_token');
+          const userData = localStorage.getItem('safehire_user_data');
+          
+          console.log('🔐 Auth check - Token:', !!token, 'UserData:', !!userData);
+          
+          if (token && userData) {
+            try {
+              const parsedUser = JSON.parse(userData);
+              setUser(parsedUser);
+              console.log('✅ User restored from localStorage:', parsedUser);
+            } catch (parseError) {
+              console.error('❌ Error parsing user data:', parseError);
+              localStorage.removeItem('safehire_user_data');
+              localStorage.removeItem('safehire_auth_token');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error checking auth:', error);
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    // Small delay to ensure localStorage is ready
+    const timer = setTimeout(checkAuth, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const login = async (email: string, password: string, role: 'user' | 'admin' = 'user') => {

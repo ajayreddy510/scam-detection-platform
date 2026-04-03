@@ -46,17 +46,35 @@ export function saveAnalysis(
     }),
   };
 
-  const allAnalyses = getAllAnalyses();
-  allAnalyses.push(newAnalysis);
-  localStorage.setItem(ANALYSES_KEY, JSON.stringify(allAnalyses));
+  try {
+    const allAnalyses = getAllAnalyses();
+    allAnalyses.push(newAnalysis);
+    localStorage.setItem(ANALYSES_KEY, JSON.stringify(allAnalyses));
+    console.log('✅ Analysis saved for user:', userId);
+  } catch (error) {
+    console.error('❌ Error saving analysis:', error);
+    throw error;
+  }
 
   return newAnalysis;
 }
 
 export function getAllAnalyses(): Analysis[] {
-  if (typeof window === 'undefined') return [];
-  const data = localStorage.getItem(ANALYSES_KEY);
-  return data ? JSON.parse(data) : [];
+  try {
+    if (typeof window === 'undefined') return [];
+    const data = localStorage.getItem(ANALYSES_KEY);
+    if (!data) return [];
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error parsing analyses:', error);
+    // Clear corrupted data
+    try {
+      localStorage.removeItem(ANALYSES_KEY);
+    } catch (clearError) {
+      console.error('Error clearing corrupted analysis data:', clearError);
+    }
+    return [];
+  }
 }
 
 export function getUserAnalyses(userId: string): Analysis[] {
