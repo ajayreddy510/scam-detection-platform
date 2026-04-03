@@ -30,7 +30,7 @@ export default function ProfilePage() {
     if (!user) {
       const timer = setTimeout(() => {
         if (!user) {
-          router.push('/auth/login');
+          window.location.href = '/auth/login';
         }
       }, 800);
       return () => clearTimeout(timer);

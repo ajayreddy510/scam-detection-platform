@@ -33,7 +33,7 @@ export default function AdminDashboard() {
     if (!user || user.role !== 'admin') {
       const timer = setTimeout(() => {
         if (!user || user.role !== 'admin') {
-          router.push('/auth/login');
+          window.location.href = '/auth/login';
         }
       }, 500);
       return () => clearTimeout(timer);

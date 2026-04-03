@@ -81,7 +81,9 @@ export default function RegisterPage() {
 
       if (result.success) {
         setSuccess('Account created successfully! Redirecting to dashboard...');
-        setTimeout(() => router.push('/analyze'), 2000);
+        setTimeout(() => {
+          window.location.href = '/analyze';
+        }, 1500);
       } else {
         setError(result.error || 'Registration failed');
       }
