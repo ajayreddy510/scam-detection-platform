@@ -28,19 +28,15 @@ export default function ProfilePage() {
     if (loading) return;
     
     if (!user) {
-      const timer = setTimeout(() => {
-        if (!user) {
-          router.push('/auth/login');
-        }
-      }, 800);
-      return () => clearTimeout(timer);
-    } else if (user) {
-      setFormData({
-        name: user.name || '',
-        email: user.email,
-      });
-      loadUserAnalyses(user.id);
+      router.push('/auth/login');
+      return;
     }
+    
+    setFormData({
+      name: user.name || '',
+      email: user.email,
+    });
+    loadUserAnalyses(user.id);
   }, [user, loading, router]);
 
   // Refresh analyses when page becomes visible

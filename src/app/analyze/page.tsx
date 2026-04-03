@@ -39,7 +39,7 @@ export default function AnalyzePage() {
     );
   }
 
-  // If auth loaded and still not authenticated, show login prompt
+  // If auth loaded and not authenticated, show sign in message
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">

@@ -27,20 +27,16 @@ export default function ReportPage() {
     if (authLoading) return;
     
     if (!user) {
-      const timer = setTimeout(() => {
-        if (!user) {
-          router.push('/auth/login');
-        }
-      }, 800);
-      return () => clearTimeout(timer);
-    } else {
-      // Get only current user's analyses
-      const allAnalyses = getAllAnalyses();
-      const userAnalyses = allAnalyses.filter(a => a.userId === user.id);
-      setAnalyses(userAnalyses);
-      setFilteredAnalyses(userAnalyses);
+      router.push('/auth/login');
+      return;
     }
-  }, [user, authLoading, router]);
+    
+    // Get only current user's analyses
+    const allAnalyses = getAllAnalyses();
+    const userAnalyses = allAnalyses.filter(a => a.userId === user.id);
+    setAnalyses(userAnalyses);
+    setFilteredAnalyses(userAnalyses);
+  }, [user, authLoading]);
 
   useEffect(() => {
     let filtered = analyses;

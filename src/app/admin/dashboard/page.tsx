@@ -9,7 +9,6 @@ import { getLocalUsers } from '@/lib/localAuth';
 export default function AdminDashboard() {
   const router = useRouter();
   const { user, loading } = useAuth();
-  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [analyses, setAnalyses] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
@@ -23,32 +22,25 @@ export default function AdminDashboard() {
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState('');
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+
 
   useEffect(() => {
-    if (!mounted || loading) return;
+    if (loading) return;
     
     if (!user || user.role !== 'admin') {
-      const timer = setTimeout(() => {
-        if (!user || user.role !== 'admin') {
-          router.push('/auth/login');
-        }
-      }, 500);
-      return () => clearTimeout(timer);
-    } else if (user && user.role === 'admin') {
-      // Load all analyses
-      const allAnalyses = getAllAnalyses().sort((a, b) => b.timestamp - a.timestamp);
-      console.log('👨‍💼 Admin panel loaded');
-      console.log('📊 Total analyses:', allAnalyses.length);
-      console.log('📋 All analyses:', allAnalyses);
-      setAnalyses(allAnalyses);
-
-      // Load all users
-      setUsers(getLocalUsers());
+      router.push('/auth/login');
+      return;
     }
-  }, [user, loading, mounted, router]);
+    
+    // Load all analyses
+    const allAnalyses = getAllAnalyses().sort((a, b) => b.timestamp - a.timestamp);
+    console.log('👨‍💼 Admin panel loaded');
+    console.log('📊 Total analyses:', allAnalyses.length);
+    setAnalyses(allAnalyses);
+
+    // Load all users
+    setUsers(getLocalUsers());
+  }, [user, loading]);
 if (loading) {
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
