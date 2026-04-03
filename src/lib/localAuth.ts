@@ -9,9 +9,11 @@ export interface LocalUser {
   role: 'user' | 'admin';
 }
 
+const isClient = () => typeof window !== 'undefined';
+
 export const getLocalUsers = (): LocalUser[] => {
   try {
-    if (typeof window === 'undefined') return [];
+    if (!isClient()) return [];
     const data = localStorage.getItem(LOCAL_USERS_KEY);
     if (!data) return [];
     return JSON.parse(data);
@@ -23,6 +25,8 @@ export const getLocalUsers = (): LocalUser[] => {
 
 export const saveLocalUser = (user: Omit<LocalUser, 'id'>): LocalUser => {
   try {
+    if (!isClient()) throw new Error('Not on client side');
+    
     const users = getLocalUsers();
     const newUser: LocalUser = {
       ...user,
@@ -30,7 +34,6 @@ export const saveLocalUser = (user: Omit<LocalUser, 'id'>): LocalUser => {
     };
     users.push(newUser);
     localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
-    console.log('✅ User saved:', newUser.email);
     return newUser;
   } catch (error) {
     console.error('Error saving local user:', error);
@@ -40,13 +43,10 @@ export const saveLocalUser = (user: Omit<LocalUser, 'id'>): LocalUser => {
 
 export const findLocalUser = (email: string, password: string): LocalUser | null => {
   try {
+    if (!isClient()) return null;
+    
     const users = getLocalUsers();
     const found = users.find(u => u.email === email && u.password === password) || null;
-    if (found) {
-      console.log('✅ User found:', email);
-    } else {
-      console.log('❌ User not found:', email);
-    }
     return found;
   } catch (error) {
     console.error('Error finding local user:', error);
@@ -56,10 +56,10 @@ export const findLocalUser = (email: string, password: string): LocalUser | null
 
 export const userExists = (email: string): boolean => {
   try {
+    if (!isClient()) return false;
+    
     const users = getLocalUsers();
-    const exists = users.some(u => u.email === email);
-    console.log(exists ? `⚠️ User exists: ${email}` : `✅ Email available: ${email}`);
-    return exists;
+    return users.some(u => u.email === email);
   } catch (error) {
     console.error('Error checking if user exists:', error);
     return false;

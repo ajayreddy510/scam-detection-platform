@@ -15,6 +15,8 @@ export interface Analysis {
 
 const ANALYSES_KEY = 'safehire_analyses';
 
+const isClient = () => typeof window !== 'undefined';
+
 export function saveAnalysis(
   userId: string,
   userName: string,
@@ -47,13 +49,13 @@ export function saveAnalysis(
   };
 
   try {
+    if (!isClient()) throw new Error('Not on client side');
+    
     const allAnalyses = getAllAnalyses();
     allAnalyses.push(newAnalysis);
     localStorage.setItem(ANALYSES_KEY, JSON.stringify(allAnalyses));
-    console.log('✅ Analysis saved for user:', userId);
   } catch (error) {
-    console.error('❌ Error saving analysis:', error);
-    throw error;
+    console.error('Error saving analysis:', error);
   }
 
   return newAnalysis;
@@ -61,15 +63,14 @@ export function saveAnalysis(
 
 export function getAllAnalyses(): Analysis[] {
   try {
-    if (typeof window === 'undefined') return [];
+    if (!isClient()) return [];
     const data = localStorage.getItem(ANALYSES_KEY);
     if (!data) return [];
     return JSON.parse(data);
   } catch (error) {
-    console.error('Error parsing analyses:', error);
-    // Clear corrupted data
+    console.error('Error getting analyses:', error);
     try {
-      localStorage.removeItem(ANALYSES_KEY);
+      if (isClient()) localStorage.removeItem(ANALYSES_KEY);
     } catch (clearError) {
       console.error('Error clearing corrupted analysis data:', clearError);
     }

@@ -17,22 +17,24 @@ export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        // Delay redirect slightly to give localStorage a chance to load
-        const timer = setTimeout(() => {
-          router.push('/auth/login');
-        }, 500);
-        return () => clearTimeout(timer);
-      } else if (user) {
+    if (loading) return;
+    
+    if (!user) {
+      // User not authenticated, redirect to login after a brief delay
+      const timer = setTimeout(() => {
+        router.push('/auth/login');
+      }, 100);
+      return () => clearTimeout(timer);
+    } else {
+      // User is authenticated, load their analyses
+      try {
         const userAnalyses = getUserAnalyses(user.id);
-        console.log('🔎 Dashboard loaded for user:', user.id);
-        console.log('📊 User analyses count:', userAnalyses.length);
-        console.log('📋 User analyses:', userAnalyses);
         setAnalyses(userAnalyses);
         applyFiltersAndSort(userAnalyses, 'all', 'high-to-low', '');
-        setPageLoading(false);
+      } catch (error) {
+        console.error('Error loading analyses:', error);
       }
+      setPageLoading(false);
     }
   }, [user, loading, router]);
 
