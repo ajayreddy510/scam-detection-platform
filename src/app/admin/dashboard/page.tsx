@@ -22,27 +22,27 @@ export default function AdminDashboard() {
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState('');
 
-  useEffect(() => {
-    if (!isLoading && (!user || user.role !== 'admin')) {
-      router.push('/auth/login');
-    } else if (user && user.role === 'admin') {
-      // Load all analyses
-      setAnalyses(getAllAnalyses().sort((a, b) => b.timestamp - a.timestamp));
-      // Load all users
-      setUsers(getLocalUsers());
-    }
-  }, [user, isLoading, router]);
+useEffect(() => {
+if (!loading && (!user || user.role !== 'admin')) {
+    router.push('/auth/login');
+  } else if (user && user.role === 'admin') {
+    // Load all analyses
+    setAnalyses(getAllAnalyses().sort((a, b) => b.timestamp - a.timestamp));
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-12 w-12 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-lg uppercase tracking-wider">Loading admin panel...</p>
-        </div>
-      </div>
-    );
+    // Load all users
+    setUsers(getLocalUsers());
   }
+}, [user, loading, router]);
+if (loading) {
+  return (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="text-center">
+        <div className="inline-block h-12 w-12 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-lg uppercase tracking-wider">Loading admin panel...</p>
+      </div>
+    </div>
+  );
+}
 
   if (!user || user.role !== 'admin') {
     return null;
