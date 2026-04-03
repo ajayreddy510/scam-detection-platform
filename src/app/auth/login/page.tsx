@@ -56,14 +56,13 @@ export default function LoginPage() {
       const result = await login(email, password, mode);
 
       if (result.success) {
-        // Longer delay to ensure localStorage is synced across tabs/contexts
-        setTimeout(() => {
-          if (mode === 'admin') {
-            window.location.href = '/admin/dashboard';
-          } else {
-            window.location.href = '/analyze';
-          }
-        }, 1000);
+        // Brief delay to ensure state updates
+        await new Promise(resolve => setTimeout(resolve, 500));
+        if (mode === 'admin') {
+          router.push('/admin/dashboard');
+        } else {
+          router.push('/analyze');
+        }
       } else {
         let errorMessage = result.error || 'Login failed';
         

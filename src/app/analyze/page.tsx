@@ -27,19 +27,19 @@ export default function AnalyzePage() {
   const [redFlags, setRedFlags] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
 
-  // Show loading while checking auth
+  // Show loading while auth checks
   if (authLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
         <div className="text-center">
           <div className="inline-block h-12 w-12 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-lg uppercase tracking-wider">Loading...</p>
+          <p className="text-lg uppercase tracking-wider">Verifying access...</p>
         </div>
       </div>
     );
   }
 
-  // If loading is done but still no user, show login redirect
+  // If auth loaded and still not authenticated, show login prompt
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">

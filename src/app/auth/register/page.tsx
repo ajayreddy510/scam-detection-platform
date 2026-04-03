@@ -80,10 +80,9 @@ export default function RegisterPage() {
       const result = await register(formData.email, formData.name, formData.password);
 
       if (result.success) {
-        setSuccess('Account created successfully! Redirecting to dashboard...');
-        setTimeout(() => {
-          window.location.href = '/analyze';
-        }, 1500);
+        setSuccess('Account created successfully! Redirecting...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        router.push('/analyze');
       } else {
         setError(result.error || 'Registration failed');
       }

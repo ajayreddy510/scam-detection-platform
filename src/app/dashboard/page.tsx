@@ -22,7 +22,7 @@ export default function Dashboard() {
     if (!user) {
       // User not authenticated, redirect to login after a delay
       const timer = setTimeout(() => {
-        window.location.href = '/auth/login';
+        router.push('/auth/login');
       }, 800);
       return () => clearTimeout(timer);
     } else {
