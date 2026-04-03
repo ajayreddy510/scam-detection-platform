@@ -8,21 +8,21 @@ import { getAllAnalyses } from '@/lib/analysisHistory';
 
 export default function AdminReportPage() {
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
   const [analyses, setAnalyses] = useState<any[]>([]);
   const [filteredAnalyses, setFilteredAnalyses] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [riskFilter, setRiskFilter] = useState('all');
 
   useEffect(() => {
-    if (!isLoading && (!user || user.role !== 'admin')) {
+    if (!loading && (!user || user.role !== 'admin')) {
       router.push('/auth/login');
     } else if (user && user.role === 'admin') {
       const allAnalyses = getAllAnalyses();
       setAnalyses(allAnalyses);
       setFilteredAnalyses(allAnalyses);
     }
-  }, [user, isLoading, router]);
+  }, [user, loading, router]);
 
   useEffect(() => {
     let filtered = analyses;
@@ -49,7 +49,7 @@ export default function AdminReportPage() {
     setFilteredAnalyses(filtered);
   }, [searchTerm, riskFilter, analyses]);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">

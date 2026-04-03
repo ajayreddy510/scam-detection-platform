@@ -4,41 +4,28 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getUserAnalyses } from '@/lib/analysisHistory';
-
-interface Analysis {
-  id: string;
-  date: string;
-  jobTitle: string;
-  companyName: string;
-  location: string;
-  salaryRange: string;
-  riskScore: number;
-  riskLevel: string;
-  analysis: string;
-  recruiterEmail: string;
-}
+import { getUserAnalyses, type Analysis } from '@/lib/analysisHistory';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [filteredAnalyses, setFilteredAnalyses] = useState<Analysis[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
   const [filterRisk, setFilterRisk] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [sortBy, setSortBy] = useState<'low-to-high' | 'high-to-low'>('high-to-low');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!loading && !user) {
       router.push('/auth/login');
     } else if (user) {
       const userAnalyses = getUserAnalyses(user.id);
       setAnalyses(userAnalyses);
       applyFiltersAndSort(userAnalyses, 'all', 'high-to-low', '');
-      setLoading(false);
+      setPageLoading(false);
     }
-  }, [user, isLoading, router]);
+  }, [user, loading, router]);
 
   const applyFiltersAndSort = (data: Analysis[], risk: string, sort: string, search: string) => {
     let filtered = data;
@@ -58,7 +45,6 @@ export default function Dashboard() {
     if (search.trim()) {
       filtered = filtered.filter(a =>
         a.companyName?.toLowerCase().includes(search.toLowerCase()) ||
-        a.jobTitle?.toLowerCase().includes(search.toLowerCase()) ||
         a.location?.toLowerCase().includes(search.toLowerCase())
       );
     }
@@ -100,7 +86,7 @@ export default function Dashboard() {
     return 'LOW RISK';
   };
 
-  if (isLoading || loading) {
+  if (pageLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
@@ -284,8 +270,8 @@ export default function Dashboard() {
                         <p>{job.salaryRange || 'Not specified'}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-amber-400 uppercase font-bold mb-1">Recruiter Email</p>
-                        <p className="text-xs font-mono break-all">{job.recruiterEmail || 'N/A'}</p>
+                        <p className="text-xs text-amber-400 uppercase font-bold mb-1">Analyzed By</p>
+                        <p className="text-xs">{job.userName || 'Unknown User'}</p>
                       </div>
                     </div>
 

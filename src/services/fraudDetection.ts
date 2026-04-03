@@ -73,7 +73,6 @@ const MARKETING_RED_FLAGS = {
   excessive_caps: /[A-Z]{5,}/g, // 5+ consecutive capital letters
   multiple_exclamation: /!{2,}/g,
   multiple_question: /\?{2,}/g,
-  emoji_spam: /[😀-🙏]{3,}/g,
 };
 
 // Industry salary benchmarks (INR/month)

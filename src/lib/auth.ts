@@ -1,11 +1,11 @@
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import { UserPayload } from '@/types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production_12345';
-const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d';
+const JWT_SECRET: Secret = process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production_12345';
+const JWT_EXPIRY: string = process.env.JWT_EXPIRY || '7d';
 
 export function generateToken(payload: UserPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY } as any);
 }
 
 export function verifyToken(token: string): UserPayload | null {

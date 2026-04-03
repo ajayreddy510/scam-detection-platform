@@ -9,7 +9,7 @@ import html2canvas from 'html2canvas';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, isLoading, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const [editMode, setEditMode] = useState(false);
   const [analyses, setAnalyses] = useState<any[]>([]);
   const [stats, setStats] = useState({ total: 0, lowRisk: 0, mediumRisk: 0, highRisk: 0, avgScore: '0', lastAnalysis: 'Never' });
@@ -25,7 +25,7 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!loading && !user) {
       router.push('/auth/login');
     } else if (user) {
       setFormData({
@@ -34,7 +34,7 @@ export default function ProfilePage() {
       });
       loadUserAnalyses(user.id);
     }
-  }, [user, isLoading, router]);
+  }, [user, loading, router]);
 
   // Refresh analyses when page becomes visible
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function ProfilePage() {
   };
 
   const downloadAnalysisJSON = () => {
-    if (analyses.length === 0) {
+    if (!user || analyses.length === 0) {
       alert('No analysis data to download');
       return;
     }
@@ -93,7 +93,7 @@ export default function ProfilePage() {
   };
 
   const downloadAnalysisAsPDF = async () => {
-    if (analyses.length === 0) {
+    if (!user || analyses.length === 0) {
       alert('No analysis data to download');
       return;
     }
@@ -123,18 +123,18 @@ export default function ProfilePage() {
 
       // Title
       doc.setFontSize(20);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('', 'bold');
       doc.text('SAFEHIRE - ANALYSIS REPORT', margin, yPosition);
       yPosition += 15;
 
       // User Info
       doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('', 'bold');
       doc.text('USER INFORMATION', margin, yPosition);
       yPosition += 8;
 
       doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('', 'normal');
       doc.text(`Name: ${user.name || 'N/A'}`, margin + 5, yPosition);
       yPosition += lineHeight;
       doc.text(`Email: ${user.email || 'N/A'}`, margin + 5, yPosition);
@@ -144,12 +144,12 @@ export default function ProfilePage() {
 
       // Statistics
       doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('', 'bold');
       doc.text('ANALYSIS STATISTICS', margin, yPosition);
       yPosition += 8;
 
       doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('', 'normal');
       doc.text(`Total Analyses: ${stats.total}`, margin + 5, yPosition);
       yPosition += lineHeight;
       doc.text(`High Risk Jobs: ${stats.highRisk}`, margin + 5, yPosition);
@@ -163,13 +163,13 @@ export default function ProfilePage() {
 
       // Analysis Details
       doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('', 'bold');
       doc.text('DETAILED ANALYSIS HISTORY', margin, yPosition);
       yPosition += 10;
 
       // Table-like structure
       doc.setFontSize(9);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('', 'bold');
       doc.text('Date', margin + 5, yPosition);
       doc.text('Company', margin + 35, yPosition);
       doc.text('Location', margin + 85, yPosition);
@@ -182,7 +182,7 @@ export default function ProfilePage() {
       doc.line(margin, yPosition - 2, pageWidth - margin, yPosition - 2);
 
       doc.setFontSize(8);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('', 'normal');
 
       analyses.forEach((analysis, index) => {
         // Check if we need a new page
@@ -215,7 +215,7 @@ export default function ProfilePage() {
       // Footer
       yPosition = pageHeight - 15;
       doc.setFontSize(8);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('', 'normal');
       doc.setTextColor(100);
       doc.text(`Generated on: ${new Date().toLocaleString()}`, margin, yPosition);
       doc.text(`Report ID: ${user.id}`, margin, yPosition + 5);
@@ -229,7 +229,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">

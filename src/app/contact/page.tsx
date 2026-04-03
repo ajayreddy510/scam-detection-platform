@@ -261,7 +261,7 @@ export default function ContactPage() {
             Our support team is ready to assist you 24/7. Get in touch with us today.
           </p>
           <button
-            onClick={() => document.querySelector('input[name="name"]')?.focus()}
+            onClick={() => (document.querySelector('input[name="name"]') as HTMLInputElement)?.focus()}
             className="px-12 py-4 bg-amber-600 hover:bg-amber-500 text-white font-bold text-lg uppercase tracking-wider border-2 border-amber-600 transition-all"
           >
             Write to Us

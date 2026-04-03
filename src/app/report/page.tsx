@@ -8,7 +8,7 @@ import { getAllAnalyses } from '@/lib/analysisHistory';
 
 export default function ReportPage() {
   const router = useRouter();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [analyses, setAnalyses] = useState<any[]>([]);
   const [filteredAnalyses, setFilteredAnalyses] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');

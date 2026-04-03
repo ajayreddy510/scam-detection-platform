@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 export default function ClientNavbar() {
-  const { user, isLoading, logout, isAuthenticated } = useAuth();
+  const { user, loading, logout, isAuthenticated } = useAuth();
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -56,7 +56,7 @@ export default function ClientNavbar() {
           )}
 
           {/* Auth Section */}
-          {!isAuthenticated && !isLoading && (
+          {!isAuthenticated && !loading && (
             <div className="flex gap-3">
               <Link
                 href="/auth/login"
@@ -127,7 +127,7 @@ export default function ClientNavbar() {
             </div>
           )}
 
-          {isLoading && (
+          {loading && (
             <div className="w-8 h-8 rounded-full bg-gray-700 animate-pulse border-2 border-amber-600"></div>
           )}
         </div>
