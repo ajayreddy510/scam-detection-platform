@@ -7,7 +7,7 @@ import { saveAnalysis } from '@/lib/analysisHistory';
 
 export default function AnalyzePage() {
   const router = useRouter();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
   const [jobPosting, setJobPosting] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
@@ -27,6 +27,19 @@ export default function AnalyzePage() {
   const [redFlags, setRedFlags] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
 
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
+        <div className="text-center">
+          <div className="inline-block h-12 w-12 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-lg uppercase tracking-wider">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect if not authenticated
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
