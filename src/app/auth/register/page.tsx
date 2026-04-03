@@ -163,7 +163,7 @@ export default function RegisterPage() {
                 disabled={isLoading || authLoading}
               />
               <p className="text-xs text-gray-500 mt-2">
-                Email used for your job seeker account
+                Must be unique - cannot reuse existing account emails
               </p>
             </div>
 

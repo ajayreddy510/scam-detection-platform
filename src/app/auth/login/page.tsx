@@ -10,13 +10,23 @@ export default function LoginPage() {
   const { login, user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [mode, setMode] = useState<'user' | 'admin'>('user');
   const [pageLoading, setPageLoading] = useState(true);
 
-  // Redirect if already logged in
+  // Load saved email and redirect if already logged in
   useEffect(() => {
+    // Load remembered email on client side
+    if (typeof window !== 'undefined') {
+      const savedEmail = localStorage.getItem('safehire_remembered_email');
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setRememberMe(true);
+      }
+    }
+    
     if (!authLoading) {
       if (user) {
         // User is already logged in, redirect to appropriate dashboard
@@ -36,6 +46,13 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
+      // Save or clear remembered email
+      if (rememberMe) {
+        localStorage.setItem('safehire_remembered_email', email);
+      } else {
+        localStorage.removeItem('safehire_remembered_email');
+      }
+
       const result = await login(email, password, mode);
 
       if (result.success) {
@@ -53,9 +70,9 @@ export default function LoginPage() {
         // Improve error messages
         if (errorMessage.includes('Invalid')) {
           if (mode === 'admin') {
-            errorMessage = 'Invalid admin credentials. Use reddyajay510@gmail.com / Ajay#2004';
+            errorMessage = 'Invalid admin credentials. Use the demo credentials shown above.';
           } else {
-            errorMessage = 'Invalid email or password. Please register if you don\'t have an account.';
+            errorMessage = 'Invalid email or password. Please check and try again.';
           }
         }
         
@@ -185,12 +202,13 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={mode === 'admin' ? 'reddyajay510@gmail.com' : 'your@email.com'}
+                placeholder="Enter your email"
                 className="w-full px-4 py-3 bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-amber-600 focus:outline-none transition-all"
                 disabled={isLoading || authLoading}
+                required
               />
               <p className="text-xs text-gray-500 mt-2">
-                {mode === 'user' ? 'Register to create account here' : 'Use fixed admin credentials'}
+                {mode === 'user' ? 'Use your registered email' : 'Admin email for management access'}
               </p>
             </div>
 
@@ -203,14 +221,32 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder={mode === 'admin' ? 'Ajay#2004' : 'Enter your password'}
+                placeholder="Enter your password"
                 className="w-full px-4 py-3 bg-gray-900 border-2 border-gray-700 text-white placeholder-gray-500 focus:border-amber-600 focus:outline-none transition-all"
                 disabled={isLoading || authLoading}
+                required
               />
               <p className="text-xs text-gray-500 mt-2">
-                {mode === 'user' ? 'Enter your secure password' : 'Admin credentials are fixed'}
+                {mode === 'user' ? 'At least 6 characters' : 'Use provided admin password'}
               </p>
             </div>
+
+            {/* Remember Me Checkbox */}
+            {mode === 'user' && (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 bg-gray-900 border-2 border-gray-700 rounded cursor-pointer accent-amber-600"
+                  disabled={isLoading || authLoading}
+                />
+                <label htmlFor="rememberMe" className="ml-2 text-xs text-gray-400 cursor-pointer hover:text-gray-300">
+                  Remember my email for next time
+                </label>
+              </div>
+            )}
 
             {/* Error Message */}
             {error && (
